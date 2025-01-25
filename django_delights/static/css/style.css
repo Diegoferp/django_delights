@@ -1,0 +1,196 @@
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+    color: #333;
+    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+}
+
+a {
+    text-decoration: none;
+    color: #007bff;
+}
+
+a:hover {
+    color: #0056b3;
+}
+
+/* Header */
+header {
+    background-color: #333;
+    color: white;
+    padding: 0.5rem 1rem; /* Reduced padding for a smaller height */
+    text-align: center;
+    font-size: 1.2rem; /* Reduced font size */
+    font-weight: bold;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+}
+
+.sidebar-toggle {
+    position: absolute;
+    top: 50%;
+    left: 1rem;
+    transform: translateY(-50%);
+    background-color: #444;
+    color: white;
+    padding: 0.4rem 0.8rem; /* Adjusted padding for a smaller toggle button */
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 0.9rem; /* Reduced font size */
+}
+
+
+/* Container */
+.container {
+    display: flex;
+    flex: 1;
+    padding-top: 50px; /* Account for fixed header */
+    padding-bottom: 50px; /* Account for fixed footer */
+    overflow: hidden;
+}
+
+/* Sidebar */
+.sidebar {
+    background-color: #f4f4f4;
+    padding: 1rem;
+    border-right: 1px solid #ddd;
+    position: fixed;
+    width: 200px;
+    height: calc(100% - 50px); /* Exclude header height */
+    top: 78px; /* Align with header */
+    left: 0;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease-in-out;
+    z-index: 1000;
+    overflow-y: auto;
+}
+
+.sidebar.active {
+    transform: translateX(0);
+}
+
+.sidebar nav a {
+    display: block;
+    padding: 0.8rem;
+    border-radius: 5px;
+    margin-bottom: 0.5rem;
+    color: #333;
+    font-weight: bold;
+    transition: background-color 0.2s ease;
+}
+
+.sidebar nav a:hover {
+    background-color: #e2e2e2;
+}
+
+/* Content Section */
+.content {
+    flex: 1;
+    margin-left: 0;
+    padding: 1.5rem;
+    background-color: white;
+    overflow-y: auto;
+}
+
+.sidebar.active + .content {
+    margin-left: 200px;
+}
+
+/* Footer */
+footer {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 1rem;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+}
+
+/* Table Styles */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1.5rem;
+}
+
+table th, table td {
+    padding: 0.8rem;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+table th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+}
+
+table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+/* Form Styles */
+form {
+    margin-bottom: 2rem;
+}
+
+form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+}
+
+form input, form select, form button {
+    display: block;
+    width: 100%;
+    padding: 0.8rem;
+    margin-bottom: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+form button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s ease;
+}
+
+form button:hover {
+    background-color: #0056b3;
+}
+
+/* Responsive Styles */
+@media (min-width: 768px) {
+    .sidebar {
+        transform: translateX(0);
+        height: calc(100% - 70px); /* Adjust for fixed header */
+    }
+
+    .content {
+        margin-left: 200px;
+    }
+
+    .sidebar-toggle {
+        display: none;
+    }
+}

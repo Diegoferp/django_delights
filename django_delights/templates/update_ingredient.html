@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}Update Ingredient - Django Delights{% endblock %}
+
+{% block content %}
+<h1>Update Ingredient</h1>
+<form method="post">
+    {% csrf_token %}
+    <label>Name:</label>
+    <input type="text" name="name" value="{{ ingredient.name }}" required><br>
+
+    <label>Unit:</label>
+    <input type="text" name="unit" value="{{ ingredient.unit }}" required><br>
+
+    <label>Price per Unit:</label>
+    <input type="number" step="0.01" name="price_per_unit" value="{{ ingredient.price_per_unit }}" required><br>
+
+    <label>Quantity:</label>
+    <input type="number" step="0.01" name="quantity" value="{{ ingredient.quantity }}" required><br>
+
+    <button type="submit">Update</button>
+</form>
+<a href="{% url 'ingredient_list' %}">Back to Ingredients</a>
+{% endblock %}

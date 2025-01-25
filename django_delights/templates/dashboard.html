@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Django Delights{% endblock %}
+
+{% block content %}
+<h1>Dashboard</h1>
+
+<div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap;">
+    <div style="flex: 1; min-width: 300px; max-width: 400px; margin-right: 20px;">
+        <p><strong>Revenue:</strong> ${{ revenue|floatformat:2 }}</p>
+        <p><strong>Cost:</strong> ${{ cost|floatformat:2 }}</p>
+        <p><strong>Profit:</strong> ${{ profit|floatformat:2 }}</p>
+    </div>
+    <div style="flex: 1; min-width: 300px; max-width: 400px;">
+        <h2>Financial Summary</h2>
+        <div style="width: 100%; height: auto; margin: 0 auto;">
+            <canvas id="revenueChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<h2>Top Selling Menu Items</h2>
+<div style="overflow-x: auto; margin-top: 20px;">
+    <table border="1" style="width: 80%; margin: 0 auto; border-collapse: collapse;">
+        <thead>
+            <tr>
+                <th>Menu Item</th>
+                <th>Total Items Sold</th>
+                <th>Total Earnings</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in top_selling_items %}
+            <tr>
+                <td>{{ item.menu_item__title }}</td>
+                <td>{{ item.total_sold }}</td>
+                <td>${{ item.total_revenue|floatformat:2 }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3" style="text-align: center;">No sales data available.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('revenueChart').getContext('2d');
+    const revenueChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Revenue', 'Cost', 'Profit'],
+            datasets: [{
+                label: 'Financial Summary',
+                data: [{{ revenue|floatformat:2 }}, {{ cost|floatformat:2 }}, {{ profit|floatformat:2 }}],
+                backgroundColor: ['#007bff', '#28a745', '#ffc107'],
+                borderColor: ['#0056b3', '#1e7e34', '#d39e00'],
+                borderWidth: 1,
+            }],
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                },
+            },
+        },
+    });
+</script>
+{% endblock %}

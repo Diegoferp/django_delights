@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}Inventory - Django Delights{% endblock %}
+
+{% block content %}
+<h1>Inventory</h1>
+<a href="{% url 'create_ingredient' %}">Add New Ingredient</a>
+<table border="1">
+    <tr>
+        <th>Name</th>
+        <th>Unit</th>
+        <th>Price per Unit</th>
+        <th>Quantity</th>
+        <th>Actions</th>
+    </tr>
+    {% for ingredient in ingredients %}
+    <tr>
+        <td>{{ ingredient.name }}</td>
+        <td>{{ ingredient.unit }}</td>
+        <td>${{ ingredient.price_per_unit }}</td>
+        <td>{{ ingredient.quantity }}</td>
+        <td>
+            <a href="{% url 'update_ingredient' ingredient.id %}">Edit</a>
+            <a href="{% url 'delete_ingredient' ingredient.id %}">Delete</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

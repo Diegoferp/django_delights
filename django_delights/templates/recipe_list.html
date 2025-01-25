@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}Recipe Requirements - Django Delights{% endblock %}
+
+{% block content %}
+<h1>Recipe Requirements</h1>
+<a href="{% url 'create_menu_item' %}">Add New Menu Item</a>
+
+{% for menu_item, recipes in recipes_by_menu_item.items %}
+    <table border="1">
+        <thead>
+            <tr>
+                <th colspan="4">
+                    <strong>{{ menu_item.title }}</strong> - Price: ${{ menu_item.price }}
+                    <a href="{% url 'add_recipe_ingredient' menu_item.id %}" style="float: right;">Add Ingredient</a>
+                </th>
+            </tr>
+            <tr>
+                <th>Ingredient</th>
+                <th>Quantity</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for recipe in recipes %}
+            <tr>
+                <td>{{ recipe.ingredient.name }}</td>
+                <td>{{ recipe.quantity }}</td>
+                <td>
+                    <a href="{% url 'update_recipe' recipe.id %}">Edit</a>
+                    <a href="{% url 'delete_recipe' recipe.id %}">Delete</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3">No ingredients added for this menu item yet.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <br>
+{% endfor %}
+
+{% endblock %}

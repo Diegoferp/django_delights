@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %}Menu - Django Delights{% endblock %}
+
+{% block content %}
+<h1>Menu</h1>
+
+<table border="1">
+    <tr>
+        <th>Dish</th>
+        <th>Price</th>
+        <th>Available Dishes</th>
+        <th>Missing Ingredients</th>
+    </tr>
+    {% for entry in menu_with_availability %}
+    <tr>
+        <td>{{ entry.item.title }}</td>
+        <td>${{ entry.item.price }}</td>
+        <td>{{ entry.max_dishes }}</td>
+        <td>
+            {% if entry.max_dishes == 0 %}
+            <ul>
+                {% for ingredient in entry.missing_ingredients %}
+                <li>{{ ingredient }}</li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            None
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}
