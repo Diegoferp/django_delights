@@ -5,23 +5,21 @@
 {% block content %}
 <h1>Dashboard</h1>
 
-<div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap;">
-    <div style="flex: 1; min-width: 300px; max-width: 400px; margin-right: 20px;">
+<div class="financial-summary">
+    <div class="financial-data">
         <p><strong>Revenue:</strong> ${{ revenue|floatformat:2 }}</p>
         <p><strong>Cost:</strong> ${{ cost|floatformat:2 }}</p>
         <p><strong>Profit:</strong> ${{ profit|floatformat:2 }}</p>
     </div>
-    <div style="flex: 1; min-width: 300px; max-width: 400px;">
+    <div class="chart-container">
         <h2>Financial Summary</h2>
-        <div style="width: 100%; height: auto; margin: 0 auto;">
-            <canvas id="revenueChart"></canvas>
-        </div>
+        <canvas id="revenueChart" width="400" height="300"></canvas>
     </div>
 </div>
 
 <h2>Top Selling Menu Items</h2>
-<div style="overflow-x: auto; margin-top: 20px;">
-    <table border="1" style="width: 80%; margin: 0 auto; border-collapse: collapse;">
+<div class="table-container">
+    <table class="styled-table">
         <thead>
             <tr>
                 <th>Menu Item</th>
@@ -45,31 +43,97 @@
     </table>
 </div>
 
+<!-- Pass data to JavaScript safely -->
+<script type="application/json" id="financial-data">
+    {
+        "revenue": {{ revenue|default:0|floatformat:2 }},
+        "cost": {{ cost|default:0|floatformat:2 }},
+        "profit": {{ profit|default:0|floatformat:2 }}
+    }
+</script>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    const ctx = document.getElementById('revenueChart').getContext('2d');
-    const revenueChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: ['Revenue', 'Cost', 'Profit'],
-            datasets: [{
-                label: 'Financial Summary',
-                data: [{{ revenue|floatformat:2 }}, {{ cost|floatformat:2 }}, {{ profit|floatformat:2 }}],
-                backgroundColor: ['#007bff', '#28a745', '#ffc107'],
-                borderColor: ['#0056b3', '#1e7e34', '#d39e00'],
-                borderWidth: 1,
-            }],
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: true,
-            scales: {
-                y: {
-                    beginAtZero: true,
+    document.addEventListener('DOMContentLoaded', function () {
+        // Get the financial data from the JSON script tag
+        const financialDataElement = document.getElementById('financial-data');
+        const financialData = JSON.parse(financialDataElement.textContent);
+
+        // Ensure the canvas is available before initializing the chart
+        const ctx = document.getElementById('revenueChart').getContext('2d');
+        if (ctx) {
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Revenue', 'Cost', 'Profit'],
+                    datasets: [{
+                        label: 'Financial Summary',
+                        data: [financialData.revenue, financialData.cost, financialData.profit],
+                        backgroundColor: ['#007bff', '#28a745', '#ffc107'],
+                        borderColor: ['#0056b3', '#1e7e34', '#d39e00'],
+                        borderWidth: 1,
+                    }],
                 },
-            },
-        },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                        },
+                    },
+                },
+            });
+        } else {
+            console.error('Canvas element not found for the chart.');
+        }
     });
 </script>
+
+<style>
+    .financial-summary {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .financial-data {
+        flex: 1;
+        min-width: 300px;
+        max-width: 400px;
+        margin-right: 20px;
+    }
+
+    .chart-container {
+        flex: 1;
+        min-width: 300px;
+        max-width: 400px;
+    }
+
+    .table-container {
+        overflow-x: auto;
+        margin-top: 20px;
+    }
+
+    .styled-table {
+        width: 80%;
+        margin: 0 auto;
+        border-collapse: collapse;
+        border: 1px solid #ddd;
+    }
+
+    .styled-table th, .styled-table td {
+        padding: 8px;
+        text-align: left;
+    }
+
+    .styled-table th {
+        background-color: #f4f4f4;
+    }
+
+    .styled-table tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+</style>
 {% endblock %}
