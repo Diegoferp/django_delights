@@ -132,17 +132,29 @@ def create_recipe_requirement(request, menu_item_id=None):
 @login_required
 def recipe_list(request):
     menu_items = MenuItem.objects.all()
-    recipes = RecipeRequirement.objects.select_related('menu_item', 'ingredient')
-    
+    recipes = RecipeRequirement.objects.select_related('ingredient', 'menu_item')
+
     # Group recipes by menu item
-    recipes_by_menu_item = {item: [] for item in menu_items}
-    for recipe in recipes:
-        recipes_by_menu_item[recipe.menu_item].append(recipe)
+    recipes_by_menu_item = {}
+    for item in menu_items:
+        recipes_for_item = []
+        total_cost = 0  # Initialize total cost for the menu item
+        for recipe in recipes.filter(menu_item=item):
+            ingredient_cost = recipe.quantity * recipe.ingredient.price_per_unit
+            total_cost += ingredient_cost
+            recipes_for_item.append({
+                'recipe': recipe,
+                'ingredient_cost': ingredient_cost,
+            })
+        recipes_by_menu_item[item] = {
+            'recipes': recipes_for_item,
+            'total_cost': total_cost,
+        }
 
     return render(request, "recipe_list.html", {
-        "menu_items": menu_items,
         "recipes_by_menu_item": recipes_by_menu_item,
     })
+
 
 
 
@@ -223,44 +235,54 @@ def home(request):
     if request.method == "POST":
         menu_item_id = request.POST.get("menu_item_id")
         customer_name = request.POST.get("customer_name")
+        quantity = int(request.POST.get("quantity", 1))  # Default to 1 if not provided
+
+        if not customer_name:
+            return render(request, 'home.html', {
+                'menu_items': menu_items,
+                'error_message': "Customer name is required.",
+            })
+
         menu_item = get_object_or_404(MenuItem, id=menu_item_id)
         recipe_requirements = RecipeRequirement.objects.filter(menu_item=menu_item)
 
-        # Check if there are enough ingredients
+        # Check if there are enough ingredients for the specified quantity
         for req in recipe_requirements:
-            if req.quantity > req.ingredient.quantity:
+            if req.quantity * quantity > req.ingredient.quantity:
                 return render(request, 'home.html', {
                     'menu_items': menu_items,
-                    'error_message': f"We apologize, not enough {req.ingredient.name} to make {menu_item.title}."
+                    'error_message': f"We apologize, not enough {req.ingredient.name} to make {quantity} {menu_item.title}(s)."
                 })
 
         # Deduct quantities from ingredients
         for req in recipe_requirements:
-            req.ingredient.quantity -= req.quantity
+            req.ingredient.quantity -= req.quantity * quantity
             req.ingredient.save()
 
-        # Record the purchase
-        Purchase.objects.create(
-            menu_item=menu_item,
-            user=customer_name,
-            timestamp=now(),
-        )
+        # Record the purchase multiple times for the quantity purchased
+        purchases = [
+            Purchase(menu_item=menu_item, user=customer_name, timestamp=now())
+            for _ in range(quantity)
+        ]
+        Purchase.objects.bulk_create(purchases)
 
         return render(request, 'home.html', {
             'menu_items': menu_items,
-            'success_message': f"Successfully purchased {menu_item.title}!"
+            'success_message': f"Successfully purchased {quantity} {menu_item.title}(s)!"
         })
 
     return render(request, 'home.html', {'menu_items': menu_items})
 
 
-from .models import Purchase
+
+
+
 
 
 
 @login_required
 def purchases_view(request):
-    purchases_list = Purchase.objects.select_related('menu_item').all()
+    purchases_list = Purchase.objects.select_related('menu_item').all().order_by('-timestamp')
     total_sales = sum(purchase.menu_item.price for purchase in purchases_list)
     
     # Pagination setup

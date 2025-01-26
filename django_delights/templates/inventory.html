@@ -17,7 +17,7 @@
     <tr>
         <td>{{ ingredient.name }}</td>
         <td>{{ ingredient.unit }}</td>
-        <td>${{ ingredient.price_per_unit }}</td>
+        <td>${{ ingredient.price_per_unit|floatformat:2 }}</td>
         <td>{{ ingredient.quantity }}</td>
         <td>
             <a href="{% url 'update_ingredient' ingredient.id %}">Edit</a>

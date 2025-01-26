@@ -29,21 +29,28 @@
                     <th>Menu Item</th>
                     <th>Price</th>
                     <th>Customer Name</th>
+                    <th>Quantity</th>
                     <th>Action</th>
                 </tr>
                 {% for item in menu_items %}
                 <tr>
-                    <td>{{ item.title }}</td>
-                    <td>${{ item.price }}</td>
-                    <td>
-                        <input type="text" name="customer_name" placeholder="Enter your name" required>
-                    </td>
-                    <td>
-                        <button type="submit" name="menu_item_id" value="{{ item.id }}">Purchase</button>
-                    </td>
+                    <form method="post">
+                        {% csrf_token %}
+                        <td>{{ item.title }}</td>
+                        <td>${{ item.price }}</td>
+                        <td>
+                            <input type="text" name="customer_name" placeholder="Enter your name" required>
+                        </td>
+                        <td>
+                            <input type="number" name="quantity" value="1" min="1" required>
+                        </td>
+                        <td>
+                            <button type="submit" name="menu_item_id" value="{{ item.id }}">Purchase</button>
+                        </td>
+                    </form>
                 </tr>
                 {% endfor %}
-            </table>
+            </table>                                    
         </form>
     </main>
 </body>
